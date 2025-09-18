@@ -31,8 +31,11 @@ impl<T> Stack<T> {
 		self.size += 1;
 	}
 	fn pop(&mut self) -> Option<T> {
-		// TODO
-		None
+		let result = self.data.pop();
+		if result.is_some() {
+			self.size -= 1;
+		}
+		result
 	}
 	fn peek(&self) -> Option<&T> {
 		if 0 == self.size {
@@ -99,10 +102,41 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 	}
 }
 
+fn is_left_bracket(c: &char) -> bool {
+	*c == '(' || *c == '[' || *c == '{'
+}
+
+fn is_right_bracket(c: &char) -> bool {
+	*c == ')' || *c == ']' || *c == '}'
+}
+
+fn is_match(top: &char, c: &char) -> bool {
+	match (top, c) {
+		('(', ')') => true,
+		('[', ']') => true,
+		('{', '}') => true,
+		_ => false,
+	}
+}
+
 fn bracket_match(bracket: &str) -> bool
 {
-	//TODO
-	true
+    // 使用栈来判断括号是否匹配
+    let mut stack = Stack::new();
+    for c in bracket.chars() {
+        if is_left_bracket(&c) {
+            stack.push(c);
+        } else if is_right_bracket(&c) {
+            if let Some(top) = stack.pop() {
+                if !is_match(&top, &c) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+    stack.is_empty()
 }
 
 #[cfg(test)]

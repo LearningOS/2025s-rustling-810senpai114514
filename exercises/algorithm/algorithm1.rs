@@ -69,14 +69,32 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		Self {
-            length: list_a.length + list_b.length,
-            start: list_a.start,
-            end: list_b.end,
+}
+
+impl<T:std::cmp::PartialOrd + std::cmp::Ord + Clone> LinkedList<T> {
+    pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self {
+        let mut list_a_vec = vec![];
+        let mut list_b_vec = vec![];
+
+        let mut cursor = list_a.start;
+        while let Some(item) = cursor {
+            list_a_vec.push(unsafe { (*item.as_ptr()).val.clone() });
+            cursor = unsafe { (*item.as_ptr()).next };
         }
-	}
+
+        let mut cursor = list_b.start;
+        while let Some(item) = cursor {
+            list_b_vec.push(unsafe { (*item.as_ptr()).val.clone() });
+            cursor = unsafe { (*item.as_ptr()).next };
+        }
+        let mut merged_vec = list_a_vec.into_iter().chain(list_b_vec.into_iter()).collect::<Vec<T>>();
+        merged_vec.sort();
+        let mut merged_list = LinkedList::new();
+        for item in merged_vec {
+            merged_list.add(item);
+        }
+        merged_list
+    }
 }
 
 impl<T> Display for LinkedList<T>

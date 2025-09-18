@@ -5,7 +5,7 @@
 */
 // I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
+fn sort<T: std::cmp::PartialOrd>(array: &mut [T]){
     let length = array.len();
     for i in 0..length {
         for j in (0..i).rev() {
